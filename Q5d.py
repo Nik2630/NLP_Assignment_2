@@ -5,23 +5,32 @@ from nltk import word_tokenize
 import math
 
 def vocab() :
-    train_set=pd.read_csv("C:\\Users\\Darshi Doshi\\Desktop\\complete_dataset.csv")
-    comm=train_set['Comment']
-    # print(comm)
-    ## creating a list of words
+    test_set=pd.read_csv('test_set_preprocessed.csv')
+    comm=test_set['Comment']
+    ## creating a list of words 
     all_words=[]
     for comment in comm :
-        if isinstance(comment, str):
-            all_words+=comment.split()
-
+        all_words+=(str(comment).split())
+    ##converting them to lowercase
+    all_words=[word.lower() if word.isalpha() else word for word in all_words]
     ## creating a vocab which contains all the unique words
     vocabulary=list(set(all_words))
+
+    train_set=pd.read_csv('train_set_preprocessed.csv')
+    comm=train_set['Comment']
+    ## creating a list of words 
+    all_words=[]
+    for comment in comm :
+        all_words+=(str(comment).split())
+    ##converting them to lowercase
+    all_words=[word.lower() if word.isalpha() else word for word in all_words]
+    vocabulary.extend(list(set(all_words)))
+    vocabulary = list(set(vocabulary))
     return all_words, vocabulary
-# all_words, vocabulary = vocab()
 
 def create_quadgram_list() :
     quadgram_list=[]
-    train_set=pd.read_csv("C:\\Users\\Darshi Doshi\\Desktop\\train_set_preprocessed11.csv")
+    train_set=pd.read_csv('train_set_preprocessed.csv')
     comm=train_set['Comment']
     #words = []
     for comment in comm :
@@ -59,7 +68,7 @@ def count_quadgrams(quadgrams_list) :
 ### trigram model , creating trigram list, trigram count
 def create_trigram_list() :
     trigram_list=[]
-    train_set=pd.read_csv("C:\\Users\\Darshi Doshi\\Desktop\\train_set_preprocessed11.csv")
+    train_set=pd.read_csv('train_set_preprocessed.csv')
     comm=train_set['Comment']
     for comment in comm :
         words=(str(comment).split())
@@ -89,7 +98,7 @@ def count_trigrams(trigrams_list) :
     return trigrams
 
 def calculate_perplexity(quadgrams_count,trigrams_count) :
-    test_set=pd.read_csv("C:\\Users\\Darshi Doshi\\Desktop\\test_set_preprocessed11.csv")
+    test_set=pd.read_csv('test_set_preprocessed.csv')
     sentences=test_set['Comment']
     total_sentences=len(sentences) # number of <s>
     perplexity=[]
@@ -150,11 +159,7 @@ def calculate_perplexity(quadgrams_count,trigrams_count) :
 
 all_words, vocabulary=vocab()
 quadgrams_list, quadgrams_size  = create_quadgram_list()
-'''for i in range(0,10):
-    print(quadgrams_list[i])'''
 quadgrams = count_quadgrams(quadgrams_list)
-'''for i in range(0,10):
-    print(quadgrams_list[i], quadgrams[quadgrams_list[i]])'''
 trigrams_list, trigram_size= create_trigram_list()
 trigrams = count_trigrams(trigrams_list)
 average_perplexity, not_perplexable, perplexity = calculate_perplexity(quadgrams,trigrams)
